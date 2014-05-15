@@ -328,8 +328,10 @@ class Mix(object):
 # The following list of all classes that are used for generation of expressions
 # is used by the generate function below.
 operators = (
-    VariableX, VariableY, Constant, Sum, Product, Sin, Tent, Level, Mix, Mod
-)  # , , Well, Level, Mix, Mod
+    VariableX, VariableY, Constant, Sum,
+    Product, Sin, Level, Mix, Mod,
+    Well, Tent
+)
 
 # We precompute those operators that have arity 0 and arity > 0
 operators0 = [op for op in operators if op.arity == 0]
@@ -364,8 +366,8 @@ class BaseArt(object):
         self.y = 0  # current row
 
     def setup_art(self):
-        # self.set_art(generate(random.randrange(20, 150)))
-        self.set_art(generate(random.randrange(5, 15)))
+        self.set_art(generate(random.randrange(20, 150)))
+        # self.set_art(generate(random.randrange(5, 15)))
 
     def set_art(self, art):
         self.art = art

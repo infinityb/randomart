@@ -1,0 +1,4 @@
+TODO:
+  * write tests for remaining transforms, comparing against reference
+    implementation
+  * remove dependency on private internal docker images

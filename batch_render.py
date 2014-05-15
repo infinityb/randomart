@@ -14,7 +14,7 @@ if sys.argv[1:]:
 
 
 def create_image(art_def, use_native, side_len):
-    image = Image.new("RGB", (256, 256))
+    image = Image.new("RGB", (side_len, side_len))
     art_impl = _PILArt(image)
     art_impl.set_art(art_def)
     if use_native:
@@ -24,9 +24,13 @@ def create_image(art_def, use_native, side_len):
 
 
 for i in count(initial_count):
-    art_definition = generate(random.randrange(5, 15))
-    print("processing %r" % art_definition)
-    create_image(art_definition, False, 256).save('out/out%08x_p.png' % i)
-    print('   out/out%08x_p.png written' % i)
-    create_image(art_definition, True, 256).save('out/out%08x_n.png' % i)
-    print('   out/out%08x_n.png written' % i)
+    art_definition = generate(random.randrange(20, 150))
+    # print("processing %r" % art_definition)
+    # create_image(art_definition, False, 256).save('out/out%08x_p.png' % i)
+    # print('   out/out%08x_p.png written' % i)
+
+    t_i = time()
+    img = create_image(art_definition, True, 512)
+    t_f = time()
+    img.save('out/out%08x_n.png' % i)
+    print('   out/out%08x_n.png written (rendered in %gs)' % (i, t_f - t_i))

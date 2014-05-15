@@ -13,17 +13,43 @@ except OSError:
     librandomart = None
 
 
-def _loadcomponent(library, python_function, symbol_name, argtypes):
-    if bool(int(os.environ.get('RA_NONATIVE', '0'))):
-        return python_function
+blacklist_natives = set([])
+
+
+def _compare_factory(pyfunc, natfunc):
+    print "_compare_factory contructed"
+
+    def decorated(*args):
+        out_b = qcolor()
+        pyfunc(*args)
+        natfunc(*(args[:-1] + (out_b, )))
+        if not args[-1] == out_b:
+            raise ValueError("{!r} != {!r} @ {!r} for {!r}".format(
+                args[-1], out_b, pyfunc, args))
+    return decorated
+
+
+def _ll_loadcomonent(symbol_name, argtypes):
     try:
         impl = getattr(librandomart, symbol_name)
     except AttributeError:
+        return None
+    impl.restype = None
+    impl.argtypes = argtypes
+    return impl
+
+
+def _loadcomponent(python_function, symbol_name, argtypes):
+    if bool(int(os.environ.get('RA_NONATIVE', '0'))):
         return python_function
-    else:
-        impl.restype = None
-        impl.argtypes = argtypes
-        return impl
+    if symbol_name in blacklist_natives:
+        return python_function
+    impl = _ll_loadcomonent(symbol_name, argtypes)
+    if impl is None:
+        return python_function
+    if bool(int(os.environ.get('RA_COMPARE', '0'))):
+        return _compare_factory(python_function, impl)
+    return impl
 
 
 # Utility functions
@@ -47,10 +73,10 @@ def _py_average_impl(c1, c2, weight, out):
 
 
 average_impl = _loadcomponent(
-    librandomart, _py_average_impl,
+    _py_average_impl,
     'qcolor_average', (
         qcolor, qcolor,
-        ctypes.c_float,
+        ctypes.c_double,
         ctypes.POINTER(qcolor)
     ))
 
@@ -62,7 +88,7 @@ def _py_tent_impl(c1, out):
 
 
 tent_impl = _loadcomponent(
-    librandomart, _py_tent_impl,
+    _py_tent_impl,
     'qcolor_tent', (
         qcolor, ctypes.POINTER(qcolor)
     ))
@@ -75,7 +101,7 @@ def _py_well_impl(c1, out):
 
 
 well_impl = _loadcomponent(
-    librandomart, _py_well_impl,
+    _py_well_impl,
     'qcolor_well', (
         qcolor, ctypes.POINTER(qcolor)
     ))
@@ -88,7 +114,7 @@ def _py_prod_impl(c1, c2, output):
 
 
 prod_impl = _loadcomponent(
-    librandomart, _py_prod_impl,
+    _py_prod_impl,
     'qcolor_product', (
         qcolor, qcolor,
         ctypes.POINTER(qcolor)
@@ -102,7 +128,7 @@ def _py_mod_impl(c1, c2, out):
 
 
 mod_impl = _loadcomponent(
-    librandomart, _py_mod_impl,
+    _py_mod_impl,
     'qcolor_mod', (
         qcolor, qcolor,
         ctypes.POINTER(qcolor)
@@ -116,9 +142,9 @@ def _py_sin_impl(c, phase, freq, out):
 
 
 sin_impl = _loadcomponent(
-    librandomart, _py_sin_impl,
+    _py_sin_impl,
     'qcolor_sin', (
-        qcolor, ctypes.c_float, ctypes.c_float,
+        qcolor, ctypes.c_double, ctypes.c_double,
         ctypes.POINTER(qcolor)
     ))
 
@@ -130,9 +156,9 @@ def _py_level_impl(threshold, c1, c2, c3, out):
 
 
 level_impl = _loadcomponent(
-    librandomart, _py_level_impl,
+    _py_level_impl,
     'qcolor_level', (
-        ctypes.c_float,
+        ctypes.c_double,
         qcolor, qcolor, qcolor,
         ctypes.POINTER(qcolor)
     ))

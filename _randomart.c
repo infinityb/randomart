@@ -316,8 +316,11 @@ void ra_tent_init(
 struct qcolor ra_sin(struct transforminfo *info, double x, double y) {
     struct qcolor c1 = ra_transforminfo_apply(info->subslots[0], x, y);
     struct ra_sin_data *data = (struct ra_sin_data*) info->data;
+
     struct qcolor out;
     qcolor_sin(c1, data->phase, data->freq, &out);
+    // printf("out = qcolor(); _py_sin_impl(qcolor(%f, %f, %f), %f, %f, out); out == qcolor(%f, %f, %f)\n",
+    //     c1.r, c1.g, c1.b, data->phase, data->freq, out.r, out.g, out.b);
     return out;
 }
 

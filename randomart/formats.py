@@ -74,6 +74,15 @@ class qcolor(Structure):
     def __repr__(self):
         return "qcolor(%g, %g, %g)" % (self.r, self.g, self.b)
 
+    def __eq__(self, other):
+        if not abs(self.r - other.r) < 0.00001:
+            return False
+        if not abs(self.g - other.g) < 0.00001:
+            return False
+        if not abs(self.b - other.b) < 0.00001:
+            return False
+        return True
+
 
 class transforminfo(Structure):
 
