@@ -86,7 +86,7 @@ void qcolor_product(struct qcolor c1, struct qcolor c2, struct qcolor *output) {
 
 void qcolor_mod(struct qcolor c1, struct qcolor c2, struct qcolor *output) {
     double zeroish = 0.0001;
-    if (c2.r < zeroish) || (c2.g < zeroish) || (c2.b < zeroish) {
+    if ((c2.r < zeroish) || (c2.g < zeroish) || (c2.b < zeroish)) {
         output->r = 0.0;
         output->g = 0.0;
         output->b = 0.0;
